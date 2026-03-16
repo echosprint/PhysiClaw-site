@@ -1,18 +1,59 @@
-<svg viewBox="0 0 120 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 280" fill="none">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="50%" r="48%">
+      <stop offset="0%" stop-color="#e85d26" stop-opacity="0.04"/>
+      <stop offset="100%" stop-color="#e85d26" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <circle cx="180" cy="115" r="110" fill="url(#bg)"/>
+
+  <!-- ======= CLAWS — behind body, smooth pincers ======= -->
+
   <!-- Left claw — below body -->
-  <path d="M27 72 C18 56, 6 40, 2 34 C0 30, 6 30, 10 34 C14 40, 18 54, 18 64 C18 68, 16 72, 14 74" fill="#e85d26"/>
-  <path d="M27 76 C18 80, 2 76, -4 64 C-6 58, -2 52, 6 54 C12 56, 16 62, 16 68 C16 72, 18 74, 22 76" fill="#e85d26"/>
-  <!-- Right claw — below body -->
-  <path d="M93 72 C102 56, 114 40, 118 34 C120 30, 114 30, 110 34 C106 40, 102 54, 102 64 C102 68, 104 72, 106 74" fill="#e85d26"/>
-  <path d="M93 76 C102 80, 118 76, 124 64 C126 58, 122 52, 114 54 C108 56, 104 62, 104 68 C104 72, 102 74, 98 76" fill="#e85d26"/>
-  <!-- Body -->
-  <path d="M60 10 C88 10, 108 24, 108 40 C108 54, 90 64, 60 64 C30 64, 12 54, 12 40 C12 24, 32 10, 60 10Z" fill="#e85d26"/>
-  <!-- Robot ears -->
-  <rect x="33" y="-4" width="6" height="16" rx="2" fill="#e85d26"/>
-  <rect x="81" y="-4" width="6" height="16" rx="2" fill="#e85d26"/>
-  <!-- Eyes -->
-  <circle cx="46" cy="32" r="6" fill="#1a1a1e"/>
-  <circle cx="74" cy="32" r="6" fill="#1a1a1e"/>
-  <circle cx="47" cy="31" r="2.5" fill="#34d399"/>
-  <circle cx="75" cy="31" r="2.5" fill="#34d399"/>
+  <g>
+    <path d="M68 182 C50 156, 26 120, 14 102 C10 96, 18 92, 26 98 C36 106, 46 128, 46 150 C46 160, 42 168, 36 172" fill="#e85d26"/>
+    <path d="M68 192 C44 198, 10 190, -2 166 C-8 152, 0 140, 14 142 C28 144, 38 156, 40 170 C42 176, 46 180, 52 182" fill="#e85d26"/>
+  </g>
+
+  <!-- Right claw — below body, mirrored -->
+  <g>
+    <path d="M292 182 C310 156, 334 120, 346 102 C350 96, 342 92, 334 98 C324 106, 314 128, 314 150 C314 160, 318 168, 324 172" fill="#e85d26"/>
+    <path d="M292 192 C316 198, 350 190, 362 166 C368 152, 360 140, 346 142 C332 144, 322 156, 320 170 C318 176, 314 180, 308 182" fill="#e85d26"/>
+  </g>
+
+  <!-- ======= BODY — wide dome, covers the claw arms ======= -->
+  <path
+    d="M180 55
+       C248 55, 300 85, 300 125
+       C300 160, 252 182, 180 182
+       C108 182, 60 160, 60 125
+       C60 85, 112 55, 180 55Z"
+    fill="#e85d26"
+  />
+
+  <!-- Shell subtle shading -->
+  <path
+    d="M180 62
+       C242 62, 290 88, 290 125
+       C290 155, 248 176, 180 176
+       C112 176, 70 155, 70 125
+       C70 88, 118 62, 180 62Z"
+    fill="none" stroke="#f58860" stroke-width="1.5" opacity="0.2"
+  />
+  <line x1="180" y1="60" x2="180" y2="178" stroke="#c44d1e" stroke-width="1" opacity="0.1"/>
+
+  <!-- ======= ROBOT EARS ======= -->
+  <rect x="128" y="24" width="12" height="34" rx="4" fill="#e85d26"/>
+  <rect x="220" y="24" width="12" height="34" rx="4" fill="#e85d26"/>
+
+  <!-- ======= EYES ======= -->
+  <circle cx="148" cy="105" r="14" fill="#1a1a1e"/>
+  <circle cx="212" cy="105" r="14" fill="#1a1a1e"/>
+  <circle cx="150" cy="103" r="5.5" fill="#34d399"/>
+  <circle cx="214" cy="103" r="5.5" fill="#34d399"/>
+  <circle cx="153" cy="100" r="2" fill="white" opacity="0.25"/>
+  <circle cx="217" cy="100" r="2" fill="white" opacity="0.25"/>
+
+
 </svg>

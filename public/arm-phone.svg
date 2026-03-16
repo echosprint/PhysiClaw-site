@@ -1,0 +1,133 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 380" fill="none">
+  <defs>
+    <linearGradient id="desk" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1a1a1e"/>
+      <stop offset="100%" stop-color="#111114"/>
+    </linearGradient>
+    <linearGradient id="arm" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#d4d4d8"/>
+      <stop offset="100%" stop-color="#a1a1aa"/>
+    </linearGradient>
+    <linearGradient id="screen" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+  </defs>
+
+  <!-- ======= DESK — isometric perspective ======= -->
+  <path d="M0 260 L250 340 L500 260 L500 380 L0 380Z" fill="url(#desk)"/>
+  <path d="M0 260 L250 340 L500 260" fill="none" stroke="#2a2a2e" stroke-width="1"/>
+
+  <!-- Desk top surface -->
+  <path d="M30 200 L250 290 L470 200 L250 110Z" fill="#1a1a1e" stroke="#2a2a2e" stroke-width="0.8"/>
+
+  <!-- ======= PHONE — flat on desk, perspective ======= -->
+  <g>
+    <!-- Phone body — parallelogram for perspective -->
+    <path d="M160 180 L260 225 L320 195 L220 150Z" fill="#0a0a0b" stroke="#3a3a3e" stroke-width="1.5"/>
+    <!-- Rounded corners hint -->
+
+    <!-- Screen -->
+    <path d="M168 182 L262 224 L314 197 L222 155Z" fill="url(#screen)"/>
+
+    <!-- Screen content — app grid dots -->
+    <g fill="#334155">
+      <circle cx="195" cy="170" r="3"/>
+      <circle cx="210" cy="176" r="3"/>
+      <circle cx="225" cy="182" r="3"/>
+      <circle cx="240" cy="188" r="3"/>
+
+      <circle cx="205" cy="164" r="3"/>
+      <circle cx="220" cy="170" r="3"/>
+      <circle cx="235" cy="176" r="3"/>
+      <circle cx="250" cy="182" r="3"/>
+
+      <circle cx="215" cy="158" r="3"/>
+      <circle cx="230" cy="164" r="3"/>
+      <circle cx="245" cy="170" r="3"/>
+      <circle cx="260" cy="176" r="3"/>
+    </g>
+
+    <!-- Highlighted app icon (Uber Eats) -->
+    <circle cx="240" cy="188" r="5" fill="#e85d26" opacity="0.8"/>
+
+    <!-- Status bar line -->
+    <line x1="175" y1="180" x2="205" y2="168" stroke="#64748b" stroke-width="0.5"/>
+  </g>
+
+  <!-- ======= GANTRY FRAME — behind and above phone ======= -->
+
+  <!-- Back rail — left vertical post -->
+  <path d="M80 60 L80 220 L90 225 L90 65Z" fill="#a1a1aa" stroke="#71717a" stroke-width="0.5"/>
+
+  <!-- Back rail — right vertical post -->
+  <path d="M400 60 L400 200 L410 205 L410 65Z" fill="#a1a1aa" stroke="#71717a" stroke-width="0.5"/>
+
+  <!-- Top crossbar -->
+  <path d="M80 60 L400 60 L410 65 L90 65Z" fill="#c4c4c8" stroke="#71717a" stroke-width="0.5"/>
+
+  <!-- ======= X-AXIS RAIL — horizontal beam that moves ======= -->
+  <path d="M85 100 L405 100 L408 104 L88 104Z" fill="#b4b4b8" stroke="#71717a" stroke-width="0.5"/>
+
+  <!-- X carriage block -->
+  <rect x="230" y="95" width="30" height="14" rx="2" fill="#a1a1aa" stroke="#71717a" stroke-width="0.5"/>
+
+  <!-- ======= Z-AXIS — vertical stylus assembly ======= -->
+
+  <!-- Z rail -->
+  <rect x="241" y="108" width="8" height="65" rx="2" fill="#a1a1aa"/>
+
+  <!-- Stylus holder -->
+  <rect x="238" y="168" width="14" height="12" rx="2" fill="#8a8a8e" stroke="#71717a" stroke-width="0.5"/>
+
+  <!-- Stylus -->
+  <rect x="242" y="178" width="6" height="28" rx="2" fill="#71717a"/>
+  <!-- Stylus tip -->
+  <path d="M245 206 L243 214 L247 214Z" fill="#52525b"/>
+
+  <!-- Touch point on phone screen -->
+  <circle cx="245" cy="216" r="3" fill="#e85d26">
+    <animate attributeName="r" values="3;7;3" dur="1.5s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.9;0.15;0.9" dur="1.5s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="245" cy="216" r="1.5" fill="#e85d26"/>
+
+  <!-- ======= TOP CAMERA — mounted on crossbar, looking down ======= -->
+  <g>
+    <!-- Mount arm -->
+    <rect x="178" y="58" width="4" height="22" fill="#71717a"/>
+    <!-- Camera body -->
+    <rect x="168" y="76" width="24" height="16" rx="4" fill="#2a2a2e" stroke="#3a3a3e" stroke-width="0.8"/>
+    <!-- Lens -->
+    <circle cx="180" cy="84" r="5" fill="#1a1a1e" stroke="#3a3a3e" stroke-width="0.6"/>
+    <circle cx="180" cy="84" r="2.5" fill="#0a0a0b"/>
+    <circle cx="180" cy="84" r="1.2" fill="#34d399" opacity="0.7">
+      <animate attributeName="opacity" values="0.7;0.2;0.7" dur="2s" repeatCount="indefinite"/>
+    </circle>
+    <!-- Sight line to phone -->
+    <line x1="180" y1="92" x2="230" y2="190" stroke="#34d399" stroke-width="0.4" stroke-dasharray="4 3" opacity="0.2"/>
+    <!-- Label -->
+    <text x="180" y="55" text-anchor="middle" font-family="monospace" font-size="7" fill="#5a5a64">TOP CAM</text>
+  </g>
+
+  <!-- ======= SIDE CAMERA — on right, looking at stylus from angle ======= -->
+  <g>
+    <!-- Camera mount -->
+    <rect x="398" y="140" width="4" height="30" fill="#71717a"/>
+    <!-- Camera body -->
+    <rect x="390" y="130" width="20" height="14" rx="3" fill="#2a2a2e" stroke="#3a3a3e" stroke-width="0.8"/>
+    <!-- Lens -->
+    <circle cx="400" cy="137" r="4.5" fill="#1a1a1e" stroke="#3a3a3e" stroke-width="0.6"/>
+    <circle cx="400" cy="137" r="2.2" fill="#0a0a0b"/>
+    <circle cx="400" cy="137" r="1" fill="#34d399" opacity="0.7">
+      <animate attributeName="opacity" values="0.7;0.2;0.7" dur="2.5s" repeatCount="indefinite"/>
+    </circle>
+    <!-- Sight line to stylus tip -->
+    <line x1="390" y1="140" x2="250" y2="210" stroke="#34d399" stroke-width="0.4" stroke-dasharray="4 3" opacity="0.2"/>
+    <!-- Label -->
+    <text x="400" y="125" text-anchor="middle" font-family="monospace" font-size="7" fill="#5a5a64">SIDE CAM</text>
+  </g>
+
+  <!-- ======= Anti-slip pad under phone ======= -->
+  <path d="M155 184 L255 229 L325 198 L225 153Z" fill="none" stroke="#2a2a2e" stroke-width="0.8" stroke-dasharray="2 2"/>
+</svg>

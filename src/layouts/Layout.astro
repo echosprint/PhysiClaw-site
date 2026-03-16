@@ -1,0 +1,104 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = 'PhysiClaw — Give AI Agents a Physical Body',
+  description = 'A robotic arm that lets AI agents physically operate any phone. Camera eyes, a stylus finger, zero APIs. Just unlock your phone and let the agent work.',
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://physiclaw.ai" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <title>{title}</title>
+    <!-- Prevent flash of wrong theme -->
+    <script is:inline>
+      (function() {
+        const saved = localStorage.getItem('theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const theme = saved || (prefersDark ? 'dark' : 'dark');
+        if (theme === 'light') {
+          document.documentElement.setAttribute('data-theme', 'light');
+        }
+      })();
+    </script>
+  </head>
+  <body class="bg-bg text-text font-sans">
+    <slot />
+    <script>
+      // Card glow effect - track mouse position
+      document.querySelectorAll('.card-glow').forEach((card) => {
+        card.addEventListener('mousemove', (e) => {
+          const el = e.currentTarget as HTMLElement;
+          const rect = el.getBoundingClientRect();
+          el.style.setProperty('--mouse-x', `${e.clientX - rect.left}px`);
+          el.style.setProperty('--mouse-y', `${e.clientY - rect.top}px`);
+        });
+      });
+
+      // Intersection Observer for fade-in animations
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('fade-up');
+              observer.unobserve(entry.target);
+            }
+          });
+        },
+        { threshold: 0.1, rootMargin: '0px 0px -50px 0px' }
+      );
+
+      document.querySelectorAll('[data-animate]').forEach((el) => {
+        el.classList.add('opacity-0');
+        observer.observe(el);
+      });
+
+      // Theme toggle
+      const toggle = document.getElementById('theme-toggle');
+      const sunIcon = document.getElementById('sun-icon');
+      const moonIcon = document.getElementById('moon-icon');
+
+      function updateToggleIcons() {
+        const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+        if (sunIcon && moonIcon) {
+          sunIcon.classList.toggle('hidden', !isLight);
+          moonIcon.classList.toggle('hidden', isLight);
+        }
+      }
+
+      updateToggleIcons();
+
+      toggle?.addEventListener('click', () => {
+        const isCurrentlyLight = document.documentElement.getAttribute('data-theme') === 'light';
+        if (isCurrentlyLight) {
+          document.documentElement.removeAttribute('data-theme');
+          localStorage.setItem('theme', 'dark');
+        } else {
+          document.documentElement.setAttribute('data-theme', 'light');
+          localStorage.setItem('theme', 'light');
+        }
+        updateToggleIcons();
+      });
+    </script>
+  </body>
+</html>

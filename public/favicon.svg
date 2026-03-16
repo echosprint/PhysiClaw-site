@@ -1,0 +1,18 @@
+<svg viewBox="0 0 120 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Left claw — below body -->
+  <path d="M27 72 C18 56, 6 40, 2 34 C0 30, 6 30, 10 34 C14 40, 18 54, 18 64 C18 68, 16 72, 14 74" fill="#e85d26"/>
+  <path d="M27 76 C18 80, 2 76, -4 64 C-6 58, -2 52, 6 54 C12 56, 16 62, 16 68 C16 72, 18 74, 22 76" fill="#e85d26"/>
+  <!-- Right claw — below body -->
+  <path d="M93 72 C102 56, 114 40, 118 34 C120 30, 114 30, 110 34 C106 40, 102 54, 102 64 C102 68, 104 72, 106 74" fill="#e85d26"/>
+  <path d="M93 76 C102 80, 118 76, 124 64 C126 58, 122 52, 114 54 C108 56, 104 62, 104 68 C104 72, 102 74, 98 76" fill="#e85d26"/>
+  <!-- Body -->
+  <path d="M60 10 C88 10, 108 24, 108 40 C108 54, 90 64, 60 64 C30 64, 12 54, 12 40 C12 24, 32 10, 60 10Z" fill="#e85d26"/>
+  <!-- Robot ears -->
+  <rect x="33" y="-4" width="6" height="16" rx="2" fill="#e85d26"/>
+  <rect x="81" y="-4" width="6" height="16" rx="2" fill="#e85d26"/>
+  <!-- Eyes -->
+  <circle cx="46" cy="32" r="6" fill="#1a1a1e"/>
+  <circle cx="74" cy="32" r="6" fill="#1a1a1e"/>
+  <circle cx="47" cy="31" r="2.5" fill="#34d399"/>
+  <circle cx="75" cy="31" r="2.5" fill="#34d399"/>
+</svg>

@@ -61,7 +61,8 @@
       ];
 
       // --- Phase 1: Tap center circle 10 times, then right, then down ---
-      const TAP_REQUIRED = 10;
+      const TAP_CENTER_REQUIRED = 10;
+      const TAP_DIR_REQUIRED = 3;
       let tapCount = 0;
 
       function startCenterTap() {
@@ -69,17 +70,17 @@
         let locked = false;
         const btn = targets[0];
         btn.classList.remove('hidden');
-        label.textContent = `Tap center circle: ${tapCount}/${TAP_REQUIRED}`;
+        label.textContent = `Tap center circle: ${tapCount}/${TAP_CENTER_REQUIRED}`;
 
         const handler = () => {
           if (locked) return;
           locked = true;
           tapCount++;
-          label.textContent = `Tap center circle: ${tapCount}/${TAP_REQUIRED}`;
+          label.textContent = `Tap center circle: ${tapCount}/${TAP_CENTER_REQUIRED}`;
           screen.style.backgroundColor = '#22c55e';
           setTimeout(() => {
             screen.style.backgroundColor = '#ffffff';
-            if (tapCount >= TAP_REQUIRED) {
+            if (tapCount >= TAP_CENTER_REQUIRED) {
               btn.removeEventListener('pointerdown', handler);
               btn.classList.add('hidden');
               startRightTap();
@@ -96,17 +97,17 @@
         let locked = false;
         const btn = targets[1];
         btn.classList.remove('hidden');
-        label.textContent = `Tap RIGHT →: ${count}/${TAP_REQUIRED}`;
+        label.textContent = `Tap RIGHT →: ${count}/${TAP_DIR_REQUIRED}`;
 
         const handler = () => {
           if (locked) return;
           locked = true;
           count++;
-          label.textContent = `Tap RIGHT →: ${count}/${TAP_REQUIRED}`;
+          label.textContent = `Tap RIGHT →: ${count}/${TAP_DIR_REQUIRED}`;
           screen.style.backgroundColor = '#22c55e';
           setTimeout(() => {
             screen.style.backgroundColor = '#ffffff';
-            if (count >= TAP_REQUIRED) {
+            if (count >= TAP_DIR_REQUIRED) {
               btn.removeEventListener('pointerdown', handler);
               btn.classList.add('hidden');
               startDownTap();
@@ -123,17 +124,17 @@
         let locked = false;
         const btn = targets[2];
         btn.classList.remove('hidden');
-        label.textContent = `Tap DOWN ↓: ${count}/${TAP_REQUIRED}`;
+        label.textContent = `Tap DOWN ↓: ${count}/${TAP_DIR_REQUIRED}`;
 
         const handler = () => {
           if (locked) return;
           locked = true;
           count++;
-          label.textContent = `Tap DOWN ↓: ${count}/${TAP_REQUIRED}`;
+          label.textContent = `Tap DOWN ↓: ${count}/${TAP_DIR_REQUIRED}`;
           screen.style.backgroundColor = '#22c55e';
           setTimeout(() => {
             screen.style.backgroundColor = '#ffffff';
-            if (count >= TAP_REQUIRED) {
+            if (count >= TAP_DIR_REQUIRED) {
               btn.removeEventListener('pointerdown', handler);
               btn.classList.add('hidden');
               startLongPressTest();
@@ -149,7 +150,7 @@
 
       // --- Long press test (center circle, 10 times, green 1s each) ---
       const LONG_PRESS_MS = 800;
-      const TOTAL_PRESSES = 10;
+      const TOTAL_PRESSES = 3;
       let pressHits = 0;
 
       function startLongPressTest() {
@@ -258,6 +259,8 @@
 
       function swipeOnDown(e: PointerEvent) {
         if (swipeLocked) return;
+        // Only start swipe if touching the orange circle
+        if (e.target !== targets[0]) return;
         swipeStartX = e.clientX;
         swipeStartY = e.clientY;
       }

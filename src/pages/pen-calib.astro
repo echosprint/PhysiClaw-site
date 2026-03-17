@@ -35,6 +35,13 @@
         color: #333;
         text-align: center;
       }
+      @keyframes pulse-ring {
+        0% { transform: translate(-50%,-50%) scale(1); opacity: 0.6; }
+        100% { transform: translate(-50%,-50%) scale(1.8); opacity: 0; }
+      }
+      @keyframes dash-spin {
+        to { stroke-dashoffset: 0; }
+      }
     </style>
   </head>
   <body>
@@ -53,145 +60,143 @@
         document.getElementById('t2') as HTMLButtonElement,
       ];
 
-      const steps = [
-        { text: 'Tap the center circle', next: 1 },
-        { text: 'Now tap RIGHT →', next: 2 },
-        { text: 'Now tap DOWN ↓', next: -1 },
-      ];
-
-      let step = 0;
-
-      targets.forEach((t, i) => {
-        t.addEventListener('click', (e) => {
-          e.stopPropagation();
-          if (i !== step) return;
-
-          t.classList.add('hidden');
-
-          const nextStep = steps[step].next;
-          if (nextStep === -1) {
-            startTapTest();
-          } else {
-            step = nextStep;
-            label.textContent = steps[step].text;
-            targets[step].classList.remove('hidden');
-          }
-        });
-      });
-
-      // --- Phase 2: Tap test (15s, use center circle t0) ---
+      // --- Phase 1: Tap center circle 10 times, then right, then down ---
       const TAP_REQUIRED = 10;
-      const TAP_DURATION = 15;
-      let hitCount = 0;
+      let tapCount = 0;
 
-      function startTapTest() {
-        hitCount = 0;
-        let remaining = TAP_DURATION;
+      function startCenterTap() {
+        tapCount = 0;
+        let locked = false;
         const btn = targets[0];
         btn.classList.remove('hidden');
-
-        label.textContent = `Tap test: ${hitCount}/${TAP_REQUIRED}  (${remaining}s)`;
-
-        const interval = setInterval(() => {
-          remaining--;
-          label.textContent = `Tap test: ${hitCount}/${TAP_REQUIRED}  (${remaining}s)`;
-          if (remaining <= 0) finish();
-        }, 1000);
-
-        const timer = setTimeout(() => finish(), TAP_DURATION * 1000);
+        label.textContent = `Tap center circle: ${tapCount}/${TAP_REQUIRED}`;
 
         const handler = () => {
-          hitCount++;
-          label.textContent = `Tap test: ${hitCount}/${TAP_REQUIRED}  (${remaining}s)`;
-        };
-        btn.addEventListener('pointerdown', handler);
-
-        function finish() {
-          clearInterval(interval);
-          clearTimeout(timer);
-          btn.removeEventListener('pointerdown', handler);
-          btn.classList.add('hidden');
-
-          const passed = hitCount >= TAP_REQUIRED;
-          label.textContent = `Tap: ${hitCount}/${TAP_REQUIRED} — ${passed ? 'PASS' : 'FAIL'}. Starting long press test...`;
-          screen.style.backgroundColor = passed ? '#22c55e' : '#ef4444';
+          if (locked) return;
+          locked = true;
+          tapCount++;
+          label.textContent = `Tap center circle: ${tapCount}/${TAP_REQUIRED}`;
+          screen.style.backgroundColor = '#22c55e';
           setTimeout(() => {
             screen.style.backgroundColor = '#ffffff';
-            startLongPressTest();
-          }, 1500);
-        }
+            if (tapCount >= TAP_REQUIRED) {
+              btn.removeEventListener('pointerdown', handler);
+              btn.classList.add('hidden');
+              startRightTap();
+            } else {
+              locked = false;
+            }
+          }, 1000);
+        };
+        btn.addEventListener('pointerdown', handler);
       }
 
-      // --- Phase 3: Long press test (use center circle t0) ---
+      function startRightTap() {
+        let count = 0;
+        let locked = false;
+        const btn = targets[1];
+        btn.classList.remove('hidden');
+        label.textContent = `Tap RIGHT →: ${count}/${TAP_REQUIRED}`;
+
+        const handler = () => {
+          if (locked) return;
+          locked = true;
+          count++;
+          label.textContent = `Tap RIGHT →: ${count}/${TAP_REQUIRED}`;
+          screen.style.backgroundColor = '#22c55e';
+          setTimeout(() => {
+            screen.style.backgroundColor = '#ffffff';
+            if (count >= TAP_REQUIRED) {
+              btn.removeEventListener('pointerdown', handler);
+              btn.classList.add('hidden');
+              startDownTap();
+            } else {
+              locked = false;
+            }
+          }, 1000);
+        };
+        btn.addEventListener('pointerdown', handler);
+      }
+
+      function startDownTap() {
+        let count = 0;
+        let locked = false;
+        const btn = targets[2];
+        btn.classList.remove('hidden');
+        label.textContent = `Tap DOWN ↓: ${count}/${TAP_REQUIRED}`;
+
+        const handler = () => {
+          if (locked) return;
+          locked = true;
+          count++;
+          label.textContent = `Tap DOWN ↓: ${count}/${TAP_REQUIRED}`;
+          screen.style.backgroundColor = '#22c55e';
+          setTimeout(() => {
+            screen.style.backgroundColor = '#ffffff';
+            if (count >= TAP_REQUIRED) {
+              btn.removeEventListener('pointerdown', handler);
+              btn.classList.add('hidden');
+              startLongPressTest();
+            } else {
+              locked = false;
+            }
+          }, 1000);
+        };
+        btn.addEventListener('pointerdown', handler);
+      }
+
+      startCenterTap();
+
+      // --- Long press test (center circle, 10 times, green 1s each) ---
       const LONG_PRESS_MS = 800;
       const TOTAL_PRESSES = 10;
       let pressHits = 0;
 
-      const PRESS_DURATION = 30;
-
       function startLongPressTest() {
         pressHits = 0;
-        let remaining = PRESS_DURATION;
         let pressStarted = false;
+        let locked = false;
         let pressTimer: ReturnType<typeof setTimeout> | undefined = undefined;
-        let done = false;
         const btn = targets[0];
         btn.classList.remove('hidden');
-
-        label.textContent = `Long press test: ${pressHits}/${TOTAL_PRESSES}  (${remaining}s)`;
-
-        const interval = setInterval(() => {
-          remaining--;
-          label.textContent = `Long press test: ${pressHits}/${TOTAL_PRESSES}  (${remaining}s)`;
-          if (remaining <= 0) finish();
-        }, 1000);
-
-        const timeout = setTimeout(() => finish(), PRESS_DURATION * 1000);
+        label.textContent = `Long press center: ${pressHits}/${TOTAL_PRESSES}`;
 
         const downHandler = (e: PointerEvent) => {
           e.stopPropagation();
+          if (locked) return;
           pressStarted = true;
           btn.style.background = '#c44d1e';
           pressTimer = setTimeout(() => {
             pressStarted = false;
+            locked = true;
             pressHits++;
             btn.style.background = '#e85d26';
+            label.textContent = `Long press center: ${pressHits}/${TOTAL_PRESSES}`;
             screen.style.backgroundColor = '#22c55e';
-            label.textContent = `Long press test: ${pressHits}/${TOTAL_PRESSES}  (${remaining}s)`;
-            setTimeout(() => { screen.style.backgroundColor = '#ffffff'; }, 300);
+            setTimeout(() => {
+              screen.style.backgroundColor = '#ffffff';
+              if (pressHits >= TOTAL_PRESSES) {
+                btn.removeEventListener('pointerdown', downHandler);
+                btn.removeEventListener('pointerup', upHandler);
+                btn.classList.add('hidden');
+                startSwipeTest();
+              } else {
+                locked = false;
+              }
+            }, 1000);
           }, LONG_PRESS_MS);
         };
 
         const upHandler = (e: PointerEvent) => {
           e.stopPropagation();
-          if (!pressStarted) return;
+          if (locked || !pressStarted) return;
           pressStarted = false;
           clearTimeout(pressTimer);
           btn.style.background = '#e85d26';
-          screen.style.backgroundColor = '#ef4444';
-          setTimeout(() => { screen.style.backgroundColor = '#ffffff'; }, 300);
         };
 
         btn.addEventListener('pointerdown', downHandler);
         btn.addEventListener('pointerup', upHandler);
-
-        function finish() {
-          if (done) return;
-          done = true;
-          clearInterval(interval);
-          clearTimeout(timeout);
-          btn.removeEventListener('pointerdown', downHandler);
-          btn.removeEventListener('pointerup', upHandler);
-          btn.classList.add('hidden');
-
-          const passed = pressHits >= TOTAL_PRESSES;
-          label.textContent = `Long press: ${pressHits}/${TOTAL_PRESSES} — ${passed ? 'PASS' : 'FAIL'}. Starting swipe test...`;
-          screen.style.backgroundColor = passed ? '#22c55e' : '#ef4444';
-          setTimeout(() => {
-            screen.style.backgroundColor = '#ffffff';
-            startSwipeTest();
-          }, 1500);
-        }
       }
 
       // --- Phase 4: Swipe calibration (center→up, down, right, left) ---
@@ -206,96 +211,131 @@
       let swipeIdx = 0;
       let swipeHits = 0;
 
-      function startSwipeTest() {
-        swipeIdx = 0;
-        swipeHits = 0;
-        showSwipePrompt();
+      // Swipe state — single set of listeners, no recursion
+      let swipeLocked = false;
+      let swipeStartX = 0;
+      let swipeStartY = 0;
+      let swipeElements: HTMLElement[] = [];
+
+      function swipeCleanup() {
+        swipeElements.forEach(el => el.remove());
+        swipeElements = [];
+        targets[0].classList.add('hidden');
+        targets[0].style.top = '50%';
+        targets[0].style.left = '50%';
       }
 
-      function showSwipePrompt() {
-        if (swipeIdx >= SWIPE_DIRS.length) {
-          finishSwipeTest();
-          return;
+      function swipeRender() {
+        const dir = SWIPE_DIRS[swipeIdx];
+        const destTopVal = parseFloat(dir.destTop);
+        const destLeftVal = parseFloat(dir.destLeft);
+
+        label.textContent = `${dir.name}  (${swipeIdx + 1}/${SWIPE_DIRS.length})`;
+
+        targets[0].classList.remove('hidden');
+        targets[0].style.top = '50%';
+        targets[0].style.left = '50%';
+
+        // Dashed circle destination
+        const dest = document.createElement('div');
+        dest.innerHTML = `<svg width="80" height="80" viewBox="0 0 80 80"><circle cx="40" cy="40" r="36" fill="none" stroke="#3b82f6" stroke-width="3" stroke-dasharray="8 6" style="animation: dash-spin 2s linear infinite; stroke-dashoffset: 56;"/></svg>`;
+        dest.style.cssText = `position:absolute;width:80px;height:80px;transform:translate(-50%,-50%);pointer-events:none;top:${dir.destTop};left:${dir.destLeft};`;
+        screen.appendChild(dest);
+        swipeElements.push(dest);
+
+        // Arrows between circles
+        for (let i = 0; i < 3; i++) {
+          const a = document.createElement('div');
+          const t = (i + 1) / 4;
+          const top = 50 + (destTopVal - 50) * t;
+          const left = 50 + (destLeftVal - 50) * t;
+          a.style.cssText = `position:absolute;top:${top}%;left:${left}%;transform:translate(-50%,-50%);font-size:28px;color:#e85d26;opacity:${0.3 + t * 0.5};user-select:none;pointer-events:none;`;
+          a.textContent = dir.arrow;
+          screen.appendChild(a);
+          swipeElements.push(a);
+        }
+      }
+
+      function swipeOnDown(e: PointerEvent) {
+        if (swipeLocked) return;
+        swipeStartX = e.clientX;
+        swipeStartY = e.clientY;
+      }
+
+      function swipeOnMove(e: PointerEvent) {
+        if (swipeLocked || (swipeStartX === 0 && swipeStartY === 0)) return;
+        const dx = e.clientX - swipeStartX;
+        const dy = e.clientY - swipeStartY;
+        const sh = window.innerHeight;
+        const sw = window.innerWidth;
+        targets[0].style.top = `${50 + (dy / sh) * 100}%`;
+        targets[0].style.left = `${50 + (dx / sw) * 100}%`;
+      }
+
+      function swipeOnUp(e: PointerEvent) {
+        if (swipeLocked) return;
+        if (swipeStartX === 0 && swipeStartY === 0) return;
+
+        const dx = e.clientX - swipeStartX;
+        const dy = e.clientY - swipeStartY;
+        swipeStartX = 0;
+        swipeStartY = 0;
+
+        let detected: string | null = null;
+        if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > SWIPE_THRESHOLD) {
+          detected = dx > 0 ? 'right' : 'left';
+        } else if (Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > SWIPE_THRESHOLD) {
+          detected = dy > 0 ? 'down' : 'up';
         }
 
         const dir = SWIPE_DIRS[swipeIdx];
-        label.textContent = `${dir.name}  (${swipeIdx + 1}/${SWIPE_DIRS.length})`;
+        const expectedMap: Record<string, string> = { '↑': 'up', '↓': 'down', '→': 'right', '←': 'left' };
 
-        // Show orange circle at center (start)
-        const btn = targets[0];
-        btn.classList.remove('hidden');
-
-        // Show arrows between circles
-        const arrowCount = 3;
-        const arrows: HTMLDivElement[] = [];
-        for (let i = 0; i < arrowCount; i++) {
-          const a = document.createElement('div');
-          const t = (i + 1) / (arrowCount + 1);
-          const top = 50 + (parseFloat(dir.destTop) - 50) * t;
-          const left = 50 + (parseFloat(dir.destLeft) - 50) * t;
-          a.style.cssText = `position:absolute;top:${top}%;left:${left}%;transform:translate(-50%,-50%);font-size:28px;color:#e85d26;opacity:${0.4 + t * 0.6};user-select:none;pointer-events:none;`;
-          a.textContent = dir.arrow;
-          screen.appendChild(a);
-          arrows.push(a);
-        }
-
-        // Show blue circle at destination
-        const dest = document.createElement('div');
-        dest.style.cssText = `position:absolute;width:80px;height:80px;border-radius:50%;background:#3b82f6;transform:translate(-50%,-50%);pointer-events:none;top:${dir.destTop};left:${dir.destLeft};`;
-        screen.appendChild(dest);
-
-        let swipeActive = false;
-        let startX = 0;
-        let startY = 0;
-
-        const onDown = (e: PointerEvent) => {
-          startX = e.clientX;
-          startY = e.clientY;
-          swipeActive = true;
-        };
-
-        const onUp = (e: PointerEvent) => {
-          if (!swipeActive) return;
-          swipeActive = false;
-
-          const dx = e.clientX - startX;
-          const dy = e.clientY - startY;
-
-          let detected: string | null = null;
-          if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > SWIPE_THRESHOLD) {
-            detected = dx > 0 ? 'right' : 'left';
-          } else if (Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > SWIPE_THRESHOLD) {
-            detected = dy > 0 ? 'down' : 'up';
-          }
-
-          const expectedMap: Record<string, string> = { '↑': 'up', '↓': 'down', '→': 'right', '←': 'left' };
-          const hit = detected === expectedMap[dir.arrow];
-
-          if (hit) swipeHits++;
-          screen.style.backgroundColor = hit ? '#22c55e' : '#ef4444';
-
-          btn.removeEventListener('pointerdown', onDown);
-          screen.removeEventListener('pointerup', onUp);
+        if (detected === expectedMap[dir.arrow]) {
+          // SUCCESS — lock, green 1s, then advance
+          swipeLocked = true;
+          swipeHits++;
+          targets[0].style.top = dir.destTop;
+          targets[0].style.left = dir.destLeft;
+          screen.style.backgroundColor = '#22c55e';
+          label.textContent = `${dir.name} — OK`;
 
           setTimeout(() => {
             screen.style.backgroundColor = '#ffffff';
-            btn.classList.add('hidden');
-            arrows.forEach(a => a.remove());
-            dest.remove();
+            swipeCleanup();
             swipeIdx++;
-            showSwipePrompt();
-          }, 400);
-        };
+            swipeLocked = false;
 
-        btn.addEventListener('pointerdown', onDown);
-        screen.addEventListener('pointerup', onUp);
+            if (swipeIdx >= SWIPE_DIRS.length) {
+              // Remove listeners, done
+              screen.removeEventListener('pointerdown', swipeOnDown);
+              screen.removeEventListener('pointermove', swipeOnMove);
+              screen.removeEventListener('pointerup', swipeOnUp);
+              finishSwipeTest();
+            } else {
+              swipeRender();
+            }
+          }, 1000);
+        } else {
+          // FAIL — reset circle to center, retry
+          targets[0].style.top = '50%';
+          targets[0].style.left = '50%';
+        }
+      }
+
+      function startSwipeTest() {
+        swipeIdx = 0;
+        swipeHits = 0;
+        swipeLocked = false;
+        swipeRender();
+        screen.addEventListener('pointerdown', swipeOnDown);
+        screen.addEventListener('pointermove', swipeOnMove);
+        screen.addEventListener('pointerup', swipeOnUp);
       }
 
       function finishSwipeTest() {
-        const swipePct = Math.round((swipeHits / SWIPE_DIRS.length) * 100);
-        label.textContent = `Tap: ${hitCount}/${TAP_REQUIRED}  |  Long press: ${pressHits}/${TOTAL_PRESSES}  |  Swipe: ${swipeHits}/${SWIPE_DIRS.length} (${swipePct}%)`;
-        const allPerfect = hitCount >= TAP_REQUIRED && pressHits >= TOTAL_PRESSES && swipeHits === SWIPE_DIRS.length;
-        screen.style.backgroundColor = allPerfect ? '#22c55e' : '#fbbf24';
+        label.textContent = `Calibration complete! Swipe: ${swipeHits}/${SWIPE_DIRS.length}`;
+        screen.style.backgroundColor = '#22c55e';
       }
     </script>
   </body>

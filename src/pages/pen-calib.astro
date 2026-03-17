@@ -6,35 +6,297 @@
     <title>Pen Calibration</title>
     <style>
       * { margin: 0; padding: 0; box-sizing: border-box; }
+      body { overflow: hidden; }
       #screen {
         position: fixed;
         inset: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
         background: #ffffff;
         transition: background-color 0.15s;
       }
-      #target {
+      .target {
+        position: absolute;
         width: 80px;
         height: 80px;
         border-radius: 50%;
         background: #e85d26;
         border: none;
         cursor: pointer;
+        transform: translate(-50%, -50%);
+      }
+      .target.hidden { display: none; }
+      #label {
+        position: fixed;
+        bottom: 24px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-family: system-ui, sans-serif;
+        font-size: 20px;
+        font-weight: 600;
+        color: #333;
+        text-align: center;
       }
     </style>
   </head>
   <body>
     <div id="screen">
-      <button id="target"></button>
+      <div id="label">Tap the center circle</div>
+      <button id="t0" class="target" style="top:50%; left:50%;"></button>
+      <button id="t1" class="target hidden" style="top:50%; left:62%;"></button>
+      <button id="t2" class="target hidden" style="top:62%; left:50%;"></button>
     </div>
     <script>
-      const screen = document.getElementById('screen');
-      const target = document.getElementById('target');
-      target.addEventListener('click', () => {
-        screen.style.backgroundColor = '#22c55e';
+      const screen = document.getElementById('screen') as HTMLDivElement;
+      const label = document.getElementById('label') as HTMLDivElement;
+      const targets = [
+        document.getElementById('t0') as HTMLButtonElement,
+        document.getElementById('t1') as HTMLButtonElement,
+        document.getElementById('t2') as HTMLButtonElement,
+      ];
+
+      const steps = [
+        { text: 'Tap the center circle', next: 1 },
+        { text: 'Now tap RIGHT →', next: 2 },
+        { text: 'Now tap DOWN ↓', next: -1 },
+      ];
+
+      let step = 0;
+
+      targets.forEach((t, i) => {
+        t.addEventListener('click', (e) => {
+          e.stopPropagation();
+          if (i !== step) return;
+
+          t.classList.add('hidden');
+
+          const nextStep = steps[step].next;
+          if (nextStep === -1) {
+            startTapTest();
+          } else {
+            step = nextStep;
+            label.textContent = steps[step].text;
+            targets[step].classList.remove('hidden');
+          }
+        });
       });
+
+      // --- Phase 2: Tap test (15s, use center circle t0) ---
+      const TAP_REQUIRED = 10;
+      const TAP_DURATION = 15;
+      let hitCount = 0;
+
+      function startTapTest() {
+        hitCount = 0;
+        let remaining = TAP_DURATION;
+        const btn = targets[0];
+        btn.classList.remove('hidden');
+
+        label.textContent = `Tap test: ${hitCount}/${TAP_REQUIRED}  (${remaining}s)`;
+
+        const interval = setInterval(() => {
+          remaining--;
+          label.textContent = `Tap test: ${hitCount}/${TAP_REQUIRED}  (${remaining}s)`;
+          if (remaining <= 0) finish();
+        }, 1000);
+
+        const timer = setTimeout(() => finish(), TAP_DURATION * 1000);
+
+        const handler = () => {
+          hitCount++;
+          label.textContent = `Tap test: ${hitCount}/${TAP_REQUIRED}  (${remaining}s)`;
+        };
+        btn.addEventListener('pointerdown', handler);
+
+        function finish() {
+          clearInterval(interval);
+          clearTimeout(timer);
+          btn.removeEventListener('pointerdown', handler);
+          btn.classList.add('hidden');
+
+          const passed = hitCount >= TAP_REQUIRED;
+          label.textContent = `Tap: ${hitCount}/${TAP_REQUIRED} — ${passed ? 'PASS' : 'FAIL'}. Starting long press test...`;
+          screen.style.backgroundColor = passed ? '#22c55e' : '#ef4444';
+          setTimeout(() => {
+            screen.style.backgroundColor = '#ffffff';
+            startLongPressTest();
+          }, 1500);
+        }
+      }
+
+      // --- Phase 3: Long press test (use center circle t0) ---
+      const LONG_PRESS_MS = 800;
+      const TOTAL_PRESSES = 10;
+      let pressHits = 0;
+
+      const PRESS_DURATION = 30;
+
+      function startLongPressTest() {
+        pressHits = 0;
+        let remaining = PRESS_DURATION;
+        let pressStarted = false;
+        let pressTimer: ReturnType<typeof setTimeout> | undefined = undefined;
+        let done = false;
+        const btn = targets[0];
+        btn.classList.remove('hidden');
+
+        label.textContent = `Long press test: ${pressHits}/${TOTAL_PRESSES}  (${remaining}s)`;
+
+        const interval = setInterval(() => {
+          remaining--;
+          label.textContent = `Long press test: ${pressHits}/${TOTAL_PRESSES}  (${remaining}s)`;
+          if (remaining <= 0) finish();
+        }, 1000);
+
+        const timeout = setTimeout(() => finish(), PRESS_DURATION * 1000);
+
+        const downHandler = (e: PointerEvent) => {
+          e.stopPropagation();
+          pressStarted = true;
+          btn.style.background = '#c44d1e';
+          pressTimer = setTimeout(() => {
+            pressStarted = false;
+            pressHits++;
+            btn.style.background = '#e85d26';
+            screen.style.backgroundColor = '#22c55e';
+            label.textContent = `Long press test: ${pressHits}/${TOTAL_PRESSES}  (${remaining}s)`;
+            setTimeout(() => { screen.style.backgroundColor = '#ffffff'; }, 300);
+          }, LONG_PRESS_MS);
+        };
+
+        const upHandler = (e: PointerEvent) => {
+          e.stopPropagation();
+          if (!pressStarted) return;
+          pressStarted = false;
+          clearTimeout(pressTimer);
+          btn.style.background = '#e85d26';
+          screen.style.backgroundColor = '#ef4444';
+          setTimeout(() => { screen.style.backgroundColor = '#ffffff'; }, 300);
+        };
+
+        btn.addEventListener('pointerdown', downHandler);
+        btn.addEventListener('pointerup', upHandler);
+
+        function finish() {
+          if (done) return;
+          done = true;
+          clearInterval(interval);
+          clearTimeout(timeout);
+          btn.removeEventListener('pointerdown', downHandler);
+          btn.removeEventListener('pointerup', upHandler);
+          btn.classList.add('hidden');
+
+          const passed = pressHits >= TOTAL_PRESSES;
+          label.textContent = `Long press: ${pressHits}/${TOTAL_PRESSES} — ${passed ? 'PASS' : 'FAIL'}. Starting swipe test...`;
+          screen.style.backgroundColor = passed ? '#22c55e' : '#ef4444';
+          setTimeout(() => {
+            screen.style.backgroundColor = '#ffffff';
+            startSwipeTest();
+          }, 1500);
+        }
+      }
+
+      // --- Phase 4: Swipe calibration (center→up, down, right, left) ---
+      // Orange circle = start (center), blue circle = destination, arrow between them
+      const SWIPE_DIRS: Array<{ name: string; destTop: string; destLeft: string; arrowTop: string; arrowLeft: string; arrow: string }> = [
+        { name: 'Swipe UP',    destTop: '38%', destLeft: '50%', arrowTop: '44%', arrowLeft: '50%', arrow: '↑' },
+        { name: 'Swipe DOWN',  destTop: '62%', destLeft: '50%', arrowTop: '56%', arrowLeft: '50%', arrow: '↓' },
+        { name: 'Swipe RIGHT', destTop: '50%', destLeft: '62%', arrowTop: '50%', arrowLeft: '56%', arrow: '→' },
+        { name: 'Swipe LEFT',  destTop: '50%', destLeft: '38%', arrowTop: '50%', arrowLeft: '44%', arrow: '←' },
+      ];
+      const SWIPE_THRESHOLD = 60;
+      let swipeIdx = 0;
+      let swipeHits = 0;
+
+      function startSwipeTest() {
+        swipeIdx = 0;
+        swipeHits = 0;
+        showSwipePrompt();
+      }
+
+      function showSwipePrompt() {
+        if (swipeIdx >= SWIPE_DIRS.length) {
+          finishSwipeTest();
+          return;
+        }
+
+        const dir = SWIPE_DIRS[swipeIdx];
+        label.textContent = `${dir.name}  (${swipeIdx + 1}/${SWIPE_DIRS.length})`;
+
+        // Show orange circle at center (start)
+        const btn = targets[0];
+        btn.classList.remove('hidden');
+
+        // Show arrows between circles
+        const arrowCount = 3;
+        const arrows: HTMLDivElement[] = [];
+        for (let i = 0; i < arrowCount; i++) {
+          const a = document.createElement('div');
+          const t = (i + 1) / (arrowCount + 1);
+          const top = 50 + (parseFloat(dir.destTop) - 50) * t;
+          const left = 50 + (parseFloat(dir.destLeft) - 50) * t;
+          a.style.cssText = `position:absolute;top:${top}%;left:${left}%;transform:translate(-50%,-50%);font-size:28px;color:#e85d26;opacity:${0.4 + t * 0.6};user-select:none;pointer-events:none;`;
+          a.textContent = dir.arrow;
+          screen.appendChild(a);
+          arrows.push(a);
+        }
+
+        // Show blue circle at destination
+        const dest = document.createElement('div');
+        dest.style.cssText = `position:absolute;width:80px;height:80px;border-radius:50%;background:#3b82f6;transform:translate(-50%,-50%);pointer-events:none;top:${dir.destTop};left:${dir.destLeft};`;
+        screen.appendChild(dest);
+
+        let swipeActive = false;
+        let startX = 0;
+        let startY = 0;
+
+        const onDown = (e: PointerEvent) => {
+          startX = e.clientX;
+          startY = e.clientY;
+          swipeActive = true;
+        };
+
+        const onUp = (e: PointerEvent) => {
+          if (!swipeActive) return;
+          swipeActive = false;
+
+          const dx = e.clientX - startX;
+          const dy = e.clientY - startY;
+
+          let detected: string | null = null;
+          if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > SWIPE_THRESHOLD) {
+            detected = dx > 0 ? 'right' : 'left';
+          } else if (Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > SWIPE_THRESHOLD) {
+            detected = dy > 0 ? 'down' : 'up';
+          }
+
+          const expectedMap: Record<string, string> = { '↑': 'up', '↓': 'down', '→': 'right', '←': 'left' };
+          const hit = detected === expectedMap[dir.arrow];
+
+          if (hit) swipeHits++;
+          screen.style.backgroundColor = hit ? '#22c55e' : '#ef4444';
+
+          btn.removeEventListener('pointerdown', onDown);
+          screen.removeEventListener('pointerup', onUp);
+
+          setTimeout(() => {
+            screen.style.backgroundColor = '#ffffff';
+            btn.classList.add('hidden');
+            arrows.forEach(a => a.remove());
+            dest.remove();
+            swipeIdx++;
+            showSwipePrompt();
+          }, 400);
+        };
+
+        btn.addEventListener('pointerdown', onDown);
+        screen.addEventListener('pointerup', onUp);
+      }
+
+      function finishSwipeTest() {
+        const swipePct = Math.round((swipeHits / SWIPE_DIRS.length) * 100);
+        label.textContent = `Tap: ${hitCount}/${TAP_REQUIRED}  |  Long press: ${pressHits}/${TOTAL_PRESSES}  |  Swipe: ${swipeHits}/${SWIPE_DIRS.length} (${swipePct}%)`;
+        const allPerfect = hitCount >= TAP_REQUIRED && pressHits >= TOTAL_PRESSES && swipeHits === SWIPE_DIRS.length;
+        screen.style.backgroundColor = allPerfect ? '#22c55e' : '#fbbf24';
+      }
     </script>
   </body>
 </html>

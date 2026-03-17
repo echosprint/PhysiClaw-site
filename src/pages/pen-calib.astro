@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pen Calibration</title>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      #screen {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #ffffff;
+        transition: background-color 0.15s;
+      }
+      #target {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: #e85d26;
+        border: none;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="screen">
+      <button id="target"></button>
+    </div>
+    <script>
+      const screen = document.getElementById('screen');
+      const target = document.getElementById('target');
+      target.addEventListener('click', () => {
+        screen.style.backgroundColor = '#22c55e';
+      });
+    </script>
+  </body>
+</html>

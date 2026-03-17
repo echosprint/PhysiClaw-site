@@ -12,6 +12,7 @@
         inset: 0;
         background: #ffffff;
         transition: background-color 0.15s;
+        touch-action: none;
       }
       .target {
         position: absolute;
@@ -261,6 +262,7 @@
         if (swipeLocked) return;
         // Only start swipe if touching the orange circle
         if (e.target !== targets[0]) return;
+        e.preventDefault();
         swipeStartX = e.clientX;
         swipeStartY = e.clientY;
       }

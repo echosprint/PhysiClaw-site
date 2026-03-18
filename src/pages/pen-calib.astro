@@ -49,6 +49,42 @@
         color: #333;
         text-align: center;
       }
+      #fullscreen-btn {
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        border: 2px solid #ccc;
+        background: #fff;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10;
+        color: #666;
+        font-size: 18px;
+      }
+      #fullscreen-btn:active { background: #eee; }
+      #reset-btn {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        border: 2px solid #ccc;
+        background: #fff;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10;
+        color: #666;
+        font-size: 20px;
+      }
+      #reset-btn:active { background: #eee; }
       @keyframes pulse-ring {
         0% { transform: translate(-50%,-50%) scale(1); opacity: 0.6; }
         100% { transform: translate(-50%,-50%) scale(1.8); opacity: 0; }
@@ -59,6 +95,8 @@
     </style>
   </head>
   <body>
+    <button id="fullscreen-btn" onclick="document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen()">⛶</button>
+    <button id="reset-btn" onclick="location.reload()">↻</button>
     <div id="screen">
       <div id="label">Tap the center circle</div>
       <button id="t0" class="target" style="top:50%; left:50%;"></button>

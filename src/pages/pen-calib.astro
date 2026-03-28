@@ -8,7 +8,7 @@
   3. Tap down   (×3)   — calibrate arm X/Y to phone Y (move arm to hit the down circle)
   4. Long press center (×3, hold 800ms) — verify long press gesture works
   5. Swipe (up → down → right → left) — verify swipe works
-  6. Dots detection — fullscreen white bg with 21 red dots (3×7 grid)
+  6. Dots detection — fullscreen white bg with 15 red dots (3×5 grid)
      at interior positions for camera calibration
 
   Each success flashes green for 1s.
@@ -400,10 +400,10 @@
         }, 1000);
       }
 
-      // --- Phase 5: Dots detection grid (3×7 = 21 red dots) ---
-      // X: 25%, 50%, 75%  |  Y: 12.5%, 25%, 37.5%, 50%, 62.5%, 75%, 87.5%
+      // --- Phase 5: Dots detection grid (3×5 = 15 red dots) ---
+      // X: 25%, 50%, 75%  |  Y: 20%, 40%, 50%, 60%, 80%
       const DOT_COLS = [25, 50, 75];
-      const DOT_ROWS = [12.5, 25, 37.5, 50, 62.5, 75, 87.5];
+      const DOT_ROWS = [20, 40, 50, 60, 80];
       const DOT_SIZE = 16; // px
 
       function startDotsDetection() {

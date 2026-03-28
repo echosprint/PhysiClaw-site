@@ -8,8 +8,10 @@
   3. Tap down   (×3)   — calibrate arm X/Y to phone Y (move arm to hit the down circle)
   4. Long press center (×3, hold 800ms) — verify long press gesture works
   5. Swipe (up → down → right → left) — verify swipe works
+  6. Dots detection — fullscreen white bg with 21 red dots (3×7 grid)
+     at interior positions for camera calibration
 
-  Each success flashes green for 1s. 
+  Each success flashes green for 1s.
 -->
 <!doctype html>
 <html lang="en">
@@ -390,8 +392,48 @@
       }
 
       function finishSwipeTest() {
-        label.textContent = `Calibration complete! Swipe: ${swipeHits}/${SWIPE_DIRS.length}`;
         screen.style.backgroundColor = '#22c55e';
+        label.textContent = `Swipe done! Starting dots detection…`;
+        setTimeout(() => {
+          screen.style.backgroundColor = '#ffffff';
+          startDotsDetection();
+        }, 1000);
+      }
+
+      // --- Phase 5: Dots detection grid (3×7 = 21 red dots) ---
+      // X: 25%, 50%, 75%  |  Y: 12.5%, 25%, 37.5%, 50%, 62.5%, 75%, 87.5%
+      const DOT_COLS = [25, 50, 75];
+      const DOT_ROWS = [12.5, 25, 37.5, 50, 62.5, 75, 87.5];
+      const DOT_SIZE = 16; // px
+
+      function startDotsDetection() {
+        // Enter fullscreen
+        if (!document.fullscreenElement) {
+          document.documentElement.requestFullscreen().catch(() => {});
+        }
+
+        // Hide label, buttons, and targets
+        label.style.display = 'none';
+        targets.forEach(t => t.classList.add('hidden'));
+
+        // Place 21 dots
+        let dotLocked = false;
+        for (const y of DOT_ROWS) {
+          for (const x of DOT_COLS) {
+            const dot = document.createElement('div');
+            dot.style.cssText = `position:absolute;top:${y}%;left:${x}%;width:${DOT_SIZE}px;height:${DOT_SIZE}px;border-radius:50%;background:#e53e3e;transform:translate(-50%,-50%);cursor:pointer;`;
+            dot.addEventListener('pointerdown', () => {
+              if (dotLocked) return;
+              dotLocked = true;
+              screen.style.backgroundColor = '#22c55e';
+              setTimeout(() => {
+                screen.style.backgroundColor = '#ffffff';
+                dotLocked = false;
+              }, 1000);
+            });
+            screen.appendChild(dot);
+          }
+        }
       }
     </script>
   </body>
